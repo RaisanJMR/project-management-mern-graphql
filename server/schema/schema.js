@@ -1,11 +1,13 @@
-const { projects, clients } = require("../sampleData");
+const { projects, clients } = require('../sampleData')
 
-const graphql = require("graphql");
+const graphql = require('graphql')
 
-const Project = require("../models/Project");
-const Client = require("../models/Client");
+const Project = require('../models/Project')
+const Client = require('../models/Client')
+
 // GET ==> query
 // ADD, UPDATE, DELETE ==> mutations
+
 const {
   GraphQLObjectType,
   GraphQLID,
@@ -13,24 +15,24 @@ const {
   GraphQLSchema,
   GraphQLList,
   GraphQLNonNull,
-} = graphql;
+} = graphql
 
 // Client Type
 
 const ClientType = new GraphQLObjectType({
-  name: "Client",
+  name: 'Client',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     phone: { type: GraphQLString },
   }),
-});
+})
 
 // Project Type
 
 const ProjectType = new GraphQLObjectType({
-  name: "Project",
+  name: 'Project',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
@@ -39,48 +41,49 @@ const ProjectType = new GraphQLObjectType({
     client: {
       type: ClientType,
       resolve(parent, args) {
-        return Client.findById(parent.clientId);
+        return Client.findById(parent.clientId)
       },
     },
   }),
-});
+})
 
 const RootQuery = new GraphQLObjectType({
-  name: "RootQueryType",
+  name: 'RootQueryType',
   fields: {
     projects: {
       type: new GraphQLList(ProjectType),
       resolve(parent, args) {
-        return Project.find();
+        return Project.find()
       },
     },
     project: {
       type: ProjectType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return Project.findById(args.id);
+        return Project.findById(args.id)
       },
     },
     clients: {
       type: new GraphQLList(ClientType),
       resolve(parent, args) {
-        return Client.find();
+        return Client.find()
       },
     },
     client: {
       type: ClientType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return Client.findById(args.id);
+        return Client.findById(args.id)
       },
     },
   },
-});
+})
 
 // Mutations
 const mutation = new GraphQLObjectType({
-  name: "Mutation",
+  name: 'Mutation',
   fields: {
+    // Add a client
     addClient: {
       type: ClientType,
       args: {
@@ -93,14 +96,23 @@ const mutation = new GraphQLObjectType({
           name: args.name,
           email: args.email,
           phone: args.phone,
-        });
-        return client.save();
+        })
+
+        return client.save()
+      },
+    },
+    // delete a client
+    deleteClient: {
+      type: ClientType,
+      args: { id: { type: GraphQLNonNull(GraphQLID) } },
+      resolve(parent, args) {
+        return Client.findByIdAndRemove(args.id)
       },
     },
   },
-});
+})
 
 module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation,
-});
+})
