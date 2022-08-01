@@ -8,11 +8,31 @@ import {
 } from '@apollo/client'
 import Clients from './components/Clients'
 
+// !WARNING check below implementation to delete client 
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        clients: {
+          merge(existing, incoming) {
+            return incoming
+          },
+        },
+        projects: {
+          merge(existing, incoming) {
+            return incoming
+          },
+        },
+      },
+    },
+  },
+})
+
 // @ Set Client vars
 
 const client = new ApolloClient({
   uri: 'http://localhost:8000/graphql',
-  cache: new InMemoryCache(),
+  cache: cache,
 })
 
 function App() {
@@ -29,3 +49,4 @@ function App() {
 }
 
 export default App
+

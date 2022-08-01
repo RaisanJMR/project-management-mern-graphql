@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const ClientSchema = new mongoose.Schema({
   name: {
@@ -6,10 +6,11 @@ const ClientSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
   },
   phone: {
     type: String,
   },
-});
+})
 
-module.exports = mongoose.model('Client', ClientSchema);
+module.exports = mongoose.model('Client', ClientSchema)
